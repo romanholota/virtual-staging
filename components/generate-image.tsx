@@ -15,12 +15,25 @@ const STYLE_OPTIONS = [
     { value: "contemporary", label: "Contemporary" },
 ];
 
+const COLOR_OPTIONS = [
+    { value: "#F8BBD0", label: "Pink" },
+    { value: "#B3E5FC", label: "Blue" },
+    { value: "#C8E6C9", label: "Green" },
+    { value: "#FFF9C4", label: "Yellow" },
+    { value: "#E1BEE7", label: "Purple" },
+    { value: "#FFCCBC", label: "Orange" },
+    { value: "#D7CCC8", label: "Brown" },
+    { value: "#CFD8DC", label: "Gray" },
+    { value: "#FFFFFF", label: "White" },
+];
+
 export default function GenerateImage() {
     const [pending, startTransition] = useTransition();
     const [error, setError] = useState<string | null>(null);
     const [resultUrl, setResultUrl] = useState<string | null>(null);
     const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
     const [style, setStyle] = useState<string>("modern");
+    const [wallColor, setWallColor] = useState<string>(COLOR_OPTIONS[0].value);
     const [file, setFile] = useState<File | null>(null);
 
     // create a local preview for the selected file
@@ -62,6 +75,7 @@ export default function GenerateImage() {
         const fd = new FormData();
         fd.append("image", file);
         fd.append("style", style);
+        fd.append("wallColor", wallColor);
 
         onSubmit(fd);
     };
@@ -69,6 +83,7 @@ export default function GenerateImage() {
     const resetForm = () => {
         setFile(null);
         setStyle("modern");
+        setWallColor(COLOR_OPTIONS[0].value);
         setLocalPreviewUrl(null);
         setResultUrl(null);
         setError(null);
@@ -79,8 +94,8 @@ export default function GenerateImage() {
         <div className="max-w-xl w-full space-y-6">
             <h2 className="text-xl font-semibold">AI Interior Reconstruction</h2>
             <p className="text-sm text-gray-600">
-                Upload a photo of a room and choose a style. The server action will return a photorealistic
-                reconstruction while keeping doors, windows, and walls in the same place.
+                Upload a photo of a room, choose a style and wall color. The server action will return a photorealistic
+                reconstruction with the selected wall color while keeping doors, windows, and the overall layout in the same place.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -136,6 +151,37 @@ export default function GenerateImage() {
                     </div>
                 </div>
 
+                {/* Wall Color Picker */}
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium">
+                        Wall Color
+                    </label>
+                    <div className="grid grid-cols-5 gap-2">
+                        {COLOR_OPTIONS.map((color) => (
+                            <label 
+                                key={color.value} 
+                                className={`flex flex-col items-center p-2 border rounded cursor-pointer transition-colors ${
+                                    wallColor === color.value ? 'border-black' : 'border-gray-200 hover:border-gray-300'
+                                }`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="wallColor"
+                                    value={color.value}
+                                    checked={wallColor === color.value}
+                                    onChange={() => setWallColor(color.value)}
+                                    className="sr-only" // Hide the actual radio button
+                                />
+                                <div 
+                                    className="w-8 h-8 rounded-full mb-1 border border-gray-200" 
+                                    style={{ backgroundColor: color.value }}
+                                ></div>
+                                <span className="text-xs text-center">{color.label}</span>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Actions */}
                 <div className="flex items-center gap-3">
                     <button
@@ -177,7 +223,7 @@ export default function GenerateImage() {
                     <img src={resultUrl} alt="Edited" className="max-w-full h-auto rounded border" />
                     <a
                         href={resultUrl}
-                        download={`visualization-${style}.png`}
+                        download={`visualization-${style}-${wallColor.replace('#', '')}.png`}
                         className="inline-block text-sm underline mt-1"
                     >
                         Download image

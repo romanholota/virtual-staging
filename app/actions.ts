@@ -30,6 +30,7 @@ export async function editImageAction(
         const ai = new GoogleGenAI({ apiKey });
 
         const style = formData.get("style")?.toString().trim() || "modern";
+        const wallColor = formData.get("wallColor")?.toString().trim() || "#F8BBD0"; // Default to pastel pink if not provided
 
         // Ask the model to return an IMAGE
         const response = await ai.models.generateContent({
@@ -37,7 +38,7 @@ export async function editImageAction(
             contents: [
                 { inlineData: { mimeType, data: base64Image } },
                 {
-                    text: `Transform this photo of an interior into a visualization of how it would look after a full reconstruction in a ${style} style. Keep all main construction elements — doors, windows, walls, ceiling height, and overall layout — in the exact same place. Do not replace windows. Replace old or damaged surfaces, including walls and ceilings with clean, renovated materials in line with the chosen style. Replace old furniture and lamps from ceiling. Use realistic textures, natural lighting, and high-quality interior design details to show a professional, photorealistic result. Do not include any text on the photograph.`,
+                    text: `Transform this photo of an interior into a visualization of how it would look after a full reconstruction in a ${style} style. Keep all main construction elements — doors, windows, walls, ceiling height, and overall layout — in the exact same place. Do not replace windows. Paint the walls in ${wallColor} color. Replace old or damaged surfaces, including walls and ceilings with clean, renovated materials in line with the chosen style. Replace old furniture and lamps from ceiling. Use realistic textures, natural lighting, and high-quality interior design details to show a professional, photorealistic result. Do not include any text on the photograph.`,
                 },
             ],
         });
