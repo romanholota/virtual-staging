@@ -104,24 +104,36 @@ export default function GenerateImage() {
                     <p className="text-xs text-gray-500">Max 10 MB.</p>
                 </div>
 
-                {/* Style select */}
-                <div className="space-y-1">
-                    <label htmlFor="style" className="block text-sm font-medium">
+                {/* Style radio buttons */}
+                <div className="space-y-2">
+                    <label className="block text-sm font-medium">
                         Interior style
                     </label>
-                    <select
-                        id="style"
-                        name="style"
-                        value={style}
-                        onChange={(e) => setStyle(e.target.value)}
-                        className="w-full rounded border px-3 py-2 text-sm"
-                    >
+                    <div className="grid grid-cols-3 gap-3">
                         {STYLE_OPTIONS.map((o) => (
-                            <option key={o.value} value={o.value}>
-                                {o.label}
-                            </option>
+                            <label 
+                                key={o.value} 
+                                className={`flex flex-col items-center p-2 border rounded cursor-pointer transition-colors ${
+                                    style === o.value ? 'border-black bg-gray-50' : 'border-gray-200 hover:bg-gray-50'
+                                }`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="style"
+                                    value={o.value}
+                                    checked={style === o.value}
+                                    onChange={() => setStyle(o.value)}
+                                    className="sr-only" // Hide the actual radio button
+                                />
+                                <img 
+                                    src={`/styles/${o.value.replace(/ /g, '-')}.svg`} 
+                                    alt={o.label} 
+                                    className="w-8 h-8 mb-1"
+                                />
+                                <span className="text-xs text-center">{o.label}</span>
+                            </label>
                         ))}
-                    </select>
+                    </div>
                 </div>
 
                 {/* Actions */}
