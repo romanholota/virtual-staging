@@ -57,7 +57,7 @@ function ImageComparisonSlider({
 
     return (
         <div className="space-y-2">
-            <p className="text-sm font-medium">Drag the slider to reveal the renovation:</p>
+            <p className="text-sm font-medium">Drag the slider to compare original and generated images:</p>
             <div 
                 className="relative w-full overflow-hidden rounded border cursor-pointer" 
                 ref={containerRef}
@@ -65,27 +65,27 @@ function ImageComparisonSlider({
             >
                 {/* Container for both images */}
                 <div className="relative">
-                    {/* Original image (base layer) with label */}
+                    {/* Generated image (base layer) with label */}
                     <div className="relative">
                         <img 
-                            src={originalImage} 
-                            alt="Original" 
+                            src={generatedImage} 
+                            alt="Generated" 
                             className="block w-full"
                             style={{ height: 'auto' }}
                         />
 
-                        {/* Original label - will be clipped when slider moves */}
+                        {/* Generated label - will be clipped when slider moves */}
                         <div 
                             className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium"
                             style={{ 
                                 display: sliderPosition < 90 ? 'block' : 'none'
                             }}
                         >
-                            Original
+                            Generated
                         </div>
                     </div>
 
-                    {/* Generated image (overlay) */}
+                    {/* Original image (overlay) */}
                     <div 
                         className="absolute top-0 left-0 w-full h-full"
                         style={{ 
@@ -93,14 +93,14 @@ function ImageComparisonSlider({
                         }}
                     >
                         <img 
-                            src={generatedImage} 
-                            alt="Generated" 
+                            src={originalImage} 
+                            alt="Original" 
                             className="block w-full"
                             style={{ height: 'auto' }}
                         />
-                        {/* Generated label - moves with the generated image */}
+                        {/* Original label - moves with the original image */}
                         <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium">
-                            Generated
+                            Original
                         </div>
                     </div>
                 </div>
