@@ -54,7 +54,7 @@ export async function editImageAction(
                             
                             Maintain the existing architectural layout perfectly. All walls, doors, and windows must remain in their original positions and sizes.
                             
-                            Do not alter the window frames or ceiling height.
+                            Do not alter the window frames or ceiling height. Do not add or remove any walls, doors or windows. Do not remove staircases.
                             
                             Renovation Details:
                             
