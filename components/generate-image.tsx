@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState, useTransition, useRef } from "react";
 import { editImageAction } from "@/app/actions"; // <- adjust path if needed
 
 const STYLE_OPTIONS = [
@@ -27,6 +27,109 @@ const COLOR_OPTIONS = [
     { value: "#CFD8DC", label: "Gray" },
     { value: "#FFFFFF", label: "White" },
 ];
+
+// Image comparison slider component
+function ImageComparisonSlider({ 
+    originalImage, 
+    generatedImage,
+    style,
+    wallColor 
+}: { 
+    originalImage: string; 
+    generatedImage: string;
+    style: string;
+    wallColor: string;
+}) {
+    const [sliderPosition, setSliderPosition] = useState(50);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSliderPosition(Number(e.target.value));
+    };
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (!containerRef.current) return;
+
+        const rect = containerRef.current.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        setSliderPosition(Math.min(Math.max(x, 0), 100));
+    };
+
+    return (
+        <div className="space-y-2">
+            <p className="text-sm font-medium">Adjust slider to reveal original image underneath:</p>
+            <div 
+                className="relative w-full overflow-hidden rounded border cursor-pointer" 
+                ref={containerRef}
+                onMouseMove={handleMouseMove}
+            >
+                {/* Original image (bottom layer) */}
+                <img 
+                    src={originalImage} 
+                    alt="Original" 
+                    className="w-full h-auto block"
+                />
+
+                {/* Generated image (top layer with opacity) */}
+                <div 
+                    className="absolute top-0 left-0 w-full h-full"
+                >
+                    <img 
+                        src={generatedImage} 
+                        alt="Generated" 
+                        className="w-full h-auto block"
+                        style={{ opacity: sliderPosition / 100 }}
+                    />
+                </div>
+
+                {/* Slider handle */}
+                <div 
+                    className="absolute top-0 h-1 bg-white shadow-md"
+                    style={{ 
+                        left: '0%', 
+                        width: `${sliderPosition}%`,
+                        bottom: '0',
+                        opacity: 0.7
+                    }}
+                ></div>
+                <div 
+                    className="absolute top-0 h-1 bg-gray-300"
+                    style={{ 
+                        left: `${sliderPosition}%`, 
+                        width: `${100 - sliderPosition}%`,
+                        bottom: '0',
+                        opacity: 0.7
+                    }}
+                ></div>
+                <div 
+                    className="absolute bottom-0 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center"
+                    style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%) translateY(50%)' }}
+                >
+                    <span className="text-xs font-medium text-gray-600">{sliderPosition}%</span>
+                </div>
+            </div>
+
+            {/* Slider control */}
+            <input
+                type="range"
+                min="0"
+                max="100"
+                value={sliderPosition}
+                onChange={handleSliderChange}
+                className="w-full"
+            />
+
+            {/* Download button */}
+            <a
+                href={generatedImage}
+                download={`visualization-${style}-${wallColor.replace('#', '')}.png`}
+                className="inline-block text-sm underline mt-1"
+            >
+                Download generated image
+            </a>
+        </div>
+    );
+}
 
 export default function GenerateImage() {
     const [pending, startTransition] = useTransition();
@@ -215,31 +318,43 @@ export default function GenerateImage() {
                 {error && <p className="text-sm text-red-600">{error}</p>}
             </form>
 
-            {/* Local preview of the uploaded image */}
-            {localPreviewUrl && (
-                <div className="space-y-2">
-                    <p className="text-sm font-medium">Original preview:</p>
-                    <img
-                        src={localPreviewUrl}
-                        alt="Original"
-                        className="max-w-full h-auto rounded border"
-                    />
-                </div>
-            )}
+            {/* Show comparison slider when both images are available */}
+            {localPreviewUrl && resultUrl ? (
+                <ImageComparisonSlider 
+                    originalImage={localPreviewUrl} 
+                    generatedImage={resultUrl}
+                    style={style}
+                    wallColor={wallColor}
+                />
+            ) : (
+                <>
+                    {/* Local preview of the uploaded image */}
+                    {localPreviewUrl && (
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium">Original preview:</p>
+                            <img
+                                src={localPreviewUrl}
+                                alt="Original"
+                                className="max-w-full h-auto rounded border"
+                            />
+                        </div>
+                    )}
 
-            {/* Result */}
-            {resultUrl && (
-                <div className="space-y-2">
-                    <p className="text-sm font-medium">Reconstructed visualization:</p>
-                    <img src={resultUrl} alt="Edited" className="max-w-full h-auto rounded border" />
-                    <a
-                        href={resultUrl}
-                        download={`visualization-${style}-${wallColor.replace('#', '')}.png`}
-                        className="inline-block text-sm underline mt-1"
-                    >
-                        Download image
-                    </a>
-                </div>
+                    {/* Result */}
+                    {resultUrl && (
+                        <div className="space-y-2">
+                            <p className="text-sm font-medium">Reconstructed visualization:</p>
+                            <img src={resultUrl} alt="Edited" className="max-w-full h-auto rounded border" />
+                            <a
+                                href={resultUrl}
+                                download={`visualization-${style}-${wallColor.replace('#', '')}.png`}
+                                className="inline-block text-sm underline mt-1"
+                            >
+                                Download image
+                            </a>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
