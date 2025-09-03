@@ -4,15 +4,15 @@ import { useEffect, useState, useTransition, useRef } from "react";
 import { editImageAction } from "@/app/actions"; // <- adjust path if needed
 
 const STYLE_OPTIONS = [
-    { value: "modern", label: "Modern" },
-    { value: "scandinavian", label: "Scandinavian" },
-    { value: "minimalist", label: "Minimalist" },
-    { value: "industrial", label: "Industrial" },
+    { value: "modern", label: "Moderný" },
+    { value: "scandinavian", label: "Škandinávsky" },
+    { value: "minimalist", label: "Minimalistický" },
+    { value: "industrial", label: "Industriálny" },
     { value: "boho", label: "Boho" },
     { value: "japandi", label: "Japandi" },
-    { value: "rustic", label: "Rustic" },
+    { value: "rustic", label: "Rustikálny" },
     { value: "mid-century modern", label: "Mid-Century Modern" },
-    { value: "contemporary", label: "Contemporary" },
+    { value: "contemporary", label: "Súčasný" },
 ];
 
 const COLOR_OPTIONS = [
@@ -77,9 +77,6 @@ function ImageComparisonSlider({
                         {/* Generated label - will be clipped when slider moves */}
                         <div 
                             className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium"
-                            style={{ 
-                                display: sliderPosition < 99 ? 'block' : 'none'
-                            }}
                         >
                             Generated
                         </div>
@@ -162,6 +159,7 @@ export default function GenerateImage() {
         }
         const url = URL.createObjectURL(file);
         setLocalPreviewUrl(url);
+        setResultUrl(null); // Clear previous result when a new file is selected
         return () => URL.revokeObjectURL(url);
     }, [file]);
 
@@ -210,17 +208,17 @@ export default function GenerateImage() {
 
     return (
         <div className="max-w-xl w-full space-y-6">
-            <h2 className="text-xl font-semibold">AI Interior Reconstruction</h2>
+            <h1 className="mb-4 text-3xl font-extrabold text-gray-900 md:text-5xl lg:text-6xl"><span
+                className="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Interiér</span> Na Klik</h1>
             <p className="text-sm text-gray-600">
-                Upload a photo of a room, choose a style and wall color. The server action will return a photorealistic
-                reconstruction with the selected wall color while keeping doors, windows, and the overall layout in the same place.
+                Nahrajte fotku miestnosti a vyberte štýl. Získate fotorealistickú vizualizáciu v novom štýle, v ktorej bude zachované pôvodné umiestnenie dverí, okien aj celkové usporiadanie.
             </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Image input */}
                 <div className="space-y-1">
                     <label htmlFor="image" className="block text-sm font-medium">
-                        Image (PNG, JPEG, or WEBP)
+                        Obrázok (PNG, JPEG, alebo WEBP)
                     </label>
                     <input
                         id="image"
@@ -240,12 +238,12 @@ export default function GenerateImage() {
                 {/* Style radio buttons */}
                 <div className="space-y-2">
                     <label className="block text-sm font-medium">
-                        Interior style
+                        Štýl interiéru
                     </label>
                     <div className="grid grid-cols-3 gap-3">
                         {STYLE_OPTIONS.map((o) => (
-                            <label 
-                                key={o.value} 
+                            <label
+                                key={o.value}
                                 className={`flex flex-col items-center p-2 border rounded cursor-pointer transition-colors ${
                                     style === o.value ? 'border-black bg-gray-50' : 'border-gray-200 hover:bg-gray-50'
                                 }`}
@@ -258,9 +256,9 @@ export default function GenerateImage() {
                                     onChange={() => setStyle(o.value)}
                                     className="sr-only" // Hide the actual radio button
                                 />
-                                <img 
-                                    src={`/styles/${o.value.replace(/ /g, '-')}.svg`} 
-                                    alt={o.label} 
+                                <img
+                                    src={`/styles/${o.value.replace(/ /g, '-')}.svg`}
+                                    alt={o.label}
                                     className="w-8 h-8 mb-1"
                                 />
                                 <span className="text-xs text-center">{o.label}</span>
@@ -317,7 +315,7 @@ export default function GenerateImage() {
                         disabled={pending}
                         className="rounded bg-black text-white px-4 py-2 text-sm disabled:opacity-60"
                     >
-                        {pending ? "Generating…" : "Generate visualization"}
+                        {pending ? "Generujem…" : "Generovať"}
                     </button>
                     <button
                         type="button"
@@ -334,8 +332,8 @@ export default function GenerateImage() {
 
             {/* Show comparison slider when both images are available */}
             {localPreviewUrl && resultUrl ? (
-                <ImageComparisonSlider 
-                    originalImage={localPreviewUrl} 
+                <ImageComparisonSlider
+                    originalImage={localPreviewUrl}
                     generatedImage={resultUrl}
                     style={style}
                     wallColor={wallColor}
@@ -345,7 +343,7 @@ export default function GenerateImage() {
                     {/* Local preview of the uploaded image */}
                     {localPreviewUrl && (
                         <div className="space-y-2">
-                            <p className="text-sm font-medium">Original preview:</p>
+                            <p className="text-sm font-medium">Originál:</p>
                             <img
                                 src={localPreviewUrl}
                                 alt="Original"
@@ -357,14 +355,14 @@ export default function GenerateImage() {
                     {/* Result */}
                     {resultUrl && (
                         <div className="space-y-2">
-                            <p className="text-sm font-medium">Reconstructed visualization:</p>
-                            <img src={resultUrl} alt="Edited" className="max-w-full h-auto rounded border" />
+                            <p className="text-sm font-medium">Návrh:</p>
+                            <img src={resultUrl} alt="Edited" className="max-w-full h-auto rounded border"/>
                             <a
                                 href={resultUrl}
                                 download={`visualization-${style}-${wallColor.replace('#', '')}.png`}
                                 className="inline-block text-sm underline mt-1"
                             >
-                                Download image
+                                Stiahnuť vygenerovaný obrázok
                             </a>
                         </div>
                     )}
