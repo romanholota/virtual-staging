@@ -78,7 +78,7 @@ function ImageComparisonSlider({
                         <div 
                             className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium"
                             style={{ 
-                                display: sliderPosition < 90 ? 'block' : 'none'
+                                display: sliderPosition < 99 ? 'block' : 'none'
                             }}
                         >
                             Generated
