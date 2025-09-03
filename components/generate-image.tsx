@@ -16,6 +16,7 @@ const STYLE_OPTIONS = [
 ];
 
 const COLOR_OPTIONS = [
+    { value: "no-change", label: "No Change" },
     { value: "#F8BBD0", label: "Pink" },
     { value: "#B3E5FC", label: "Blue" },
     { value: "#C8E6C9", label: "Green" },
@@ -33,7 +34,7 @@ export default function GenerateImage() {
     const [resultUrl, setResultUrl] = useState<string | null>(null);
     const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null);
     const [style, setStyle] = useState<string>("modern");
-    const [wallColor, setWallColor] = useState<string>(COLOR_OPTIONS[0].value);
+    const [wallColor, setWallColor] = useState<string>(COLOR_OPTIONS[0].value); // Default to "no-change"
     const [file, setFile] = useState<File | null>(null);
 
     // create a local preview for the selected file
@@ -83,7 +84,7 @@ export default function GenerateImage() {
     const resetForm = () => {
         setFile(null);
         setStyle("modern");
-        setWallColor(COLOR_OPTIONS[0].value);
+        setWallColor(COLOR_OPTIONS[0].value); // Reset to "no-change"
         setLocalPreviewUrl(null);
         setResultUrl(null);
         setError(null);
@@ -172,10 +173,20 @@ export default function GenerateImage() {
                                     onChange={() => setWallColor(color.value)}
                                     className="sr-only" // Hide the actual radio button
                                 />
-                                <div 
-                                    className="w-8 h-8 rounded-full mb-1 border border-gray-200" 
-                                    style={{ backgroundColor: color.value }}
-                                ></div>
+                                {color.value === "no-change" ? (
+                                    <div 
+                                        className="w-8 h-8 rounded-full mb-1 border border-gray-200 flex items-center justify-center"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </div>
+                                ) : (
+                                    <div 
+                                        className="w-8 h-8 rounded-full mb-1 border border-gray-200" 
+                                        style={{ backgroundColor: color.value }}
+                                    ></div>
+                                )}
                                 <span className="text-xs text-center">{color.label}</span>
                             </label>
                         ))}
