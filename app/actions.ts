@@ -37,7 +37,27 @@ export async function editImageAction(
             contents: [
                 { inlineData: { mimeType, data: base64Image } },
                 {
-                    text: `Transform this photo of an interior into a visualization of how it would look after a full reconstruction in a ${style} style. Keep all main construction elements — doors, windows, walls, ceiling height, and overall layout — in the exact same place. Do not replace windows. Replace old or damaged surfaces, including walls and ceilings with clean, renovated materials in line with the chosen style. Replace old furniture and lamps from ceiling. Use realistic textures, natural lighting, and high-quality interior design details to show a professional, photorealistic result. Do not include any text on the photograph.`,
+                    text: `Photorealistic interior design rendering of a fully renovated room in a ${style} style. Use the provided image as a strict structural reference.
+
+                            Structural Constraints:
+                            
+                            Maintain the existing architectural layout perfectly. All walls, doors, and windows must remain in their original positions and sizes.
+                            
+                            Do not alter the window frames or ceiling height.
+                            
+                            Renovation Details:
+                            
+                            Replace all furniture, decor, and ceiling light fixtures with new, high-end items that fit the ${style} aesthetic.
+                            
+                            Refinish all surfaces: Apply new, clean materials to the walls, floor, and ceiling. Ensure materials are appropriate for the chosen style (e.g., light wood floors and white walls for Scandinavian; polished concrete and exposed brick for Industrial).
+                            
+                            Aesthetic Goals:
+                            
+                            Photography: Professional interior design magazine quality, natural lighting streaming from the windows, hyperrealistic, 8K resolution.
+                            
+                            Atmosphere: Clean, professionally staged, inviting, high-end.
+                            
+                            Negative Prompt: --no text, --no watermarks, --no people, --no clutter, --no distorted perspectives`,
                 },
             ],
         });
@@ -49,8 +69,10 @@ export async function editImageAction(
         const dataUrl = `data:${outMime};base64,${outBase64}`;
 
         return { ok: true, dataUrl, mimeType: outMime };
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error(e);
-        return { ok: false, error: e?.message ?? "Unknown error" };
+        let message = "Unknown error";
+        if (e instanceof Error) message = e.message;
+        return { ok: false, error: message};
     }
 }
