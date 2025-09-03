@@ -57,55 +57,69 @@ function ImageComparisonSlider({
 
     return (
         <div className="space-y-2">
-            <p className="text-sm font-medium">Adjust slider to reveal original image underneath:</p>
+            <p className="text-sm font-medium">Drag the slider to reveal the renovation:</p>
             <div 
                 className="relative w-full overflow-hidden rounded border cursor-pointer" 
                 ref={containerRef}
                 onMouseMove={handleMouseMove}
             >
-                {/* Original image (bottom layer) */}
-                <img 
-                    src={originalImage} 
-                    alt="Original" 
-                    className="w-full h-auto block"
-                />
+                {/* Container for both images */}
+                <div className="relative">
+                    {/* Original image (base layer) with label */}
+                    <div className="relative">
+                        <img 
+                            src={originalImage} 
+                            alt="Original" 
+                            className="block w-full"
+                            style={{ height: 'auto' }}
+                        />
 
-                {/* Generated image (top layer with opacity) */}
-                <div 
-                    className="absolute top-0 left-0 w-full h-full"
-                >
-                    <img 
-                        src={generatedImage} 
-                        alt="Generated" 
-                        className="w-full h-auto block"
-                        style={{ opacity: sliderPosition / 100 }}
-                    />
+                        {/* Original label - will be clipped when slider moves */}
+                        <div 
+                            className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium"
+                            style={{ 
+                                display: sliderPosition < 90 ? 'block' : 'none'
+                            }}
+                        >
+                            Original
+                        </div>
+                    </div>
+
+                    {/* Generated image (overlay) */}
+                    <div 
+                        className="absolute top-0 left-0 w-full h-full"
+                        style={{ 
+                            clipPath: `inset(0 ${100-sliderPosition}% 0 0)` 
+                        }}
+                    >
+                        <img 
+                            src={generatedImage} 
+                            alt="Generated" 
+                            className="block w-full"
+                            style={{ height: 'auto' }}
+                        />
+                        {/* Generated label - moves with the generated image */}
+                        <div className="absolute top-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-medium">
+                            Generated
+                        </div>
+                    </div>
                 </div>
 
-                {/* Slider handle */}
+                {/* Vertical divider line with gradient effect */}
                 <div 
-                    className="absolute top-0 h-1 bg-white shadow-md"
+                    className="absolute top-0 bottom-0 w-1 bg-white shadow-md z-10"
                     style={{ 
-                        left: '0%', 
-                        width: `${sliderPosition}%`,
-                        bottom: '0',
-                        opacity: 0.7
+                        left: `${sliderPosition}%`,
+                        background: 'linear-gradient(to right, rgba(255,255,255,0.7), rgba(255,255,255,1), rgba(255,255,255,0.7))',
+                        width: '2px'
                     }}
-                ></div>
-                <div 
-                    className="absolute top-0 h-1 bg-gray-300"
-                    style={{ 
-                        left: `${sliderPosition}%`, 
-                        width: `${100 - sliderPosition}%`,
-                        bottom: '0',
-                        opacity: 0.7
-                    }}
-                ></div>
-                <div 
-                    className="absolute bottom-0 w-6 h-6 bg-white rounded-full shadow-md flex items-center justify-center"
-                    style={{ left: `${sliderPosition}%`, transform: 'translateX(-50%) translateY(50%)' }}
                 >
-                    <span className="text-xs font-medium text-gray-600">{sliderPosition}%</span>
+                    {/* Slider handle */}
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
                 </div>
             </div>
 
@@ -256,45 +270,45 @@ export default function GenerateImage() {
                 </div>
 
                 {/* Wall Color Picker */}
-                <div className="space-y-2">
-                    <label className="block text-sm font-medium">
-                        Wall Color
-                    </label>
-                    <div className="grid grid-cols-5 gap-2">
-                        {COLOR_OPTIONS.map((color) => (
-                            <label 
-                                key={color.value} 
-                                className={`flex flex-col items-center p-2 border rounded cursor-pointer transition-colors ${
-                                    wallColor === color.value ? 'border-black' : 'border-gray-200 hover:border-gray-300'
-                                }`}
-                            >
-                                <input
-                                    type="radio"
-                                    name="wallColor"
-                                    value={color.value}
-                                    checked={wallColor === color.value}
-                                    onChange={() => setWallColor(color.value)}
-                                    className="sr-only" // Hide the actual radio button
-                                />
-                                {color.value === "no-change" ? (
-                                    <div 
-                                        className="w-8 h-8 rounded-full mb-1 border border-gray-200 flex items-center justify-center"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </div>
-                                ) : (
-                                    <div 
-                                        className="w-8 h-8 rounded-full mb-1 border border-gray-200" 
-                                        style={{ backgroundColor: color.value }}
-                                    ></div>
-                                )}
-                                <span className="text-xs text-center">{color.label}</span>
-                            </label>
-                        ))}
-                    </div>
-                </div>
+                {/*<div className="space-y-2">*/}
+                {/*    <label className="block text-sm font-medium">*/}
+                {/*        Wall Color*/}
+                {/*    </label>*/}
+                {/*    <div className="grid grid-cols-5 gap-2">*/}
+                {/*        {COLOR_OPTIONS.map((color) => (*/}
+                {/*            <label */}
+                {/*                key={color.value} */}
+                {/*                className={`flex flex-col items-center p-2 border rounded cursor-pointer transition-colors ${*/}
+                {/*                    wallColor === color.value ? 'border-black' : 'border-gray-200 hover:border-gray-300'*/}
+                {/*                }`}*/}
+                {/*            >*/}
+                {/*                <input*/}
+                {/*                    type="radio"*/}
+                {/*                    name="wallColor"*/}
+                {/*                    value={color.value}*/}
+                {/*                    checked={wallColor === color.value}*/}
+                {/*                    onChange={() => setWallColor(color.value)}*/}
+                {/*                    className="sr-only" // Hide the actual radio button*/}
+                {/*                />*/}
+                {/*                {color.value === "no-change" ? (*/}
+                {/*                    <div */}
+                {/*                        className="w-8 h-8 rounded-full mb-1 border border-gray-200 flex items-center justify-center"*/}
+                {/*                    >*/}
+                {/*                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">*/}
+                {/*                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />*/}
+                {/*                        </svg>*/}
+                {/*                    </div>*/}
+                {/*                ) : (*/}
+                {/*                    <div */}
+                {/*                        className="w-8 h-8 rounded-full mb-1 border border-gray-200" */}
+                {/*                        style={{ backgroundColor: color.value }}*/}
+                {/*                    ></div>*/}
+                {/*                )}*/}
+                {/*                <span className="text-xs text-center">{color.label}</span>*/}
+                {/*            </label>*/}
+                {/*        ))}*/}
+                {/*    </div>*/}
+                {/*</div>*/}
 
                 {/* Actions */}
                 <div className="flex items-center gap-3">
